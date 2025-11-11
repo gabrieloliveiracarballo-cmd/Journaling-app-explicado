@@ -1,0 +1,508 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journaling 2.0 - Experiencia Dinámica</title>
+    <style>
+        /* --- ESTILOS GENERALES Y DE BASE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.5);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-size: 3.5em;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: -2px;
+        }
+        
+        .subtitle {
+            color: #888;
+            margin-bottom: 40px;
+            font-size: 1.3em;
+            text-align: center;
+            font-weight: 300;
+        }
+
+        /* --- ESTILOS DEL ACORDEÓN Y SECCIONES --- */
+        .section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .section.active {
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 25px 35px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .section.active h2 {
+            border-color: #e0e0e0;
+        }
+
+        .accordion-icon {
+            margin-left: auto;
+            transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            font-size: 1.5em;
+            color: #764ba2;
+        }
+
+        .section.active .accordion-icon {
+            transform: rotate(90deg);
+        }
+        
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1), padding 0.5s ease;
+            padding: 0 35px;
+        }
+
+        .section.active .section-content {
+            max-height: 4000px; /* Valor alto para permitir cualquier contenido */
+            padding: 35px;
+            padding-top: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        /* --- ESTILOS DE CAMPOS DEL FORMULARIO --- */
+        label { display: block; margin-bottom: 10px; color: #333; font-weight: 600; font-size: 1.05em; }
+        .required { color: #e74c3c; }
+        input[type="text"], input[type="date"], input[type="number"], input[type="time"], select, textarea { width: 100%; padding: 16px 20px; border: 2px solid #e8e8e8; border-radius: 15px; font-size: 16px; transition: all 0.3s; background: #fafafa; font-family: inherit; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; background: white; box-shadow: 0 5px 20px rgba(102, 126, 234, 0.15); transform: translateY(-2px); }
+        textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+        .time-group { display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: end; }
+        .day-toggle { display: flex; gap: 10px; }
+        .day-option { flex: 1; padding: 12px 20px; border: 2px solid #e8e8e8; border-radius: 12px; background: #fafafa; cursor: pointer; text-align: center; font-weight: 600; color: #666; }
+        .day-option.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: #667eea; color: white; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
+        .checkbox-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 15px; }
+        .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: white; border: 2px solid #e8e8e8; border-radius: 12px; transition: all 0.3s; cursor: pointer; }
+        .checkbox-item:hover { border-color: #667eea; background: #f8f9ff; transform: translateY(-2px); }
+        .checkbox-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #667eea; }
+        .checkbox-item label { margin: 0; cursor: pointer; font-weight: 500; font-size: 0.95em; flex: 1; }
+        .checkbox-item:has(input:checked) { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: #667eea; color: white; }
+        .checkbox-item:has(input:checked) label { color: white; }
+        .other-input { display: none; margin-top: 15px; }
+        .rating-input { background: white !important; border: 2px solid #667eea !important; font-weight: 600; color: #667eea; text-align: center; }
+        
+        /* --- ESTILOS DEL BOTÓN Y MENSAJES --- */
+        button[type="submit"] {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: white; padding: 20px 50px; border: none; border-radius: 50px; font-size: 20px;
+            font-weight: 700; cursor: pointer; width: 100%; transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); text-transform: uppercase;
+            margin-top: 20px;
+        }
+        button:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4); }
+        .error-message { display: none; background: #e74c3c; color: white; padding: 15px; border-radius: 10px; margin-top: 20px; text-align: center; }
+
+        /* --- PANTALLA DE ÉXITO --- */
+        #successScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            animation: fadeInSuccess 1s forwards;
+        }
+
+        @keyframes fadeInSuccess { to { opacity: 1; } }
+        
+        .success-content {
+            transform: translateY(-20px);
+            opacity: 0;
+            animation: slideInUp 0.8s 0.3s forwards;
+        }
+
+        @keyframes slideInUp { to { transform: translateY(0); opacity: 1; } }
+
+        #successScreen h2 { font-size: 4em; font-weight: 800; margin-bottom: 20px; text-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        #successScreen p { font-size: 1.5em; font-weight: 300; }
+    </style>
+</head>
+<body>
+    <div class="container" id="formContainer">
+        <h1>✨ Journaling 2.0</h1>
+        <p class="subtitle">Tu espacio de crecimiento personal</p>
+        
+        <form id="journalingForm">
+            
+            <!-- Sección 1: Información Básica (Abierta por defecto) -->
+            <div class="section active">
+                <h2>📅 Información Básica <span class="accordion-icon">&gt;</span></h2>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label>De qué día estás hablando? <span class="required">*</span></label>
+                        <input type="date" name="fecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora levantado <span class="required">*</span></label>
+                        <input type="time" name="hora_levantado" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora acostarse <span class="required">*</span></label>
+                        <div class="time-group">
+                            <input type="time" name="hora_acostarse" required>
+                            <div class="day-toggle">
+                                <div class="day-option active" data-day="actual">Día actual</div>
+                                <div class="day-option" data-day="siguiente">Día siguiente</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Sensación predominante del día <span class="required">*</span></label>
+                        <div class="checkbox-options">
+                            <!-- Opciones -->
+                            <div class="checkbox-item"><input type="checkbox" id="sens_contento" name="sensacion" value="Contento"><label for="sens_contento">Contento</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="sens_satisfecho" name="sensacion" value="Satisfecho"><label for="sens_satisfecho">Satisfecho</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="sens_tranquilo" name="sensacion" value="Tranquilo"><label for="sens_tranquilo">Tranquilo</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="sens_motivado" name="sensacion" value="Motivado"><label for="sens_motivado">Motivado</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="sens_agradecido" name="sensacion" value="Agradecido"><label for="sens_agradecido">Agradecido</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="sens_estresado" name="sensacion" value="Estresado"><label for="sens_estresado">Estresado</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="sens_cansado" name="sensacion" value="Cansado"><label for="sens_cansado">Cansado</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="sens_normal" name="sensacion" value="Normal"><label for="sens_normal">Normal</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="sens_otros_check" name="sensacion_otros_check"><label for="sens_otros_check">Otros</label></div>
+                        </div>
+                        <input type="text" class="other-input" id="sensacion_otros" name="sensacion_otros" placeholder="Especifica otras sensaciones">
+                    </div>
+                    <div class="form-group">
+                        <label>Temperatura media <span class="required">*</span></label>
+                        <select name="temperatura" class="dropdown-with-other" required><option value="">Selecciona</option><option value="10">10°C</option><option value="15">15°C</option><option value="20">20°C</option><option value="25">25°C</option><option value="30">30°C</option><option value="Otros">Otros</option></select>
+                        <input type="text" class="other-input" name="temperatura_otros" placeholder="Especifica la temperatura">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado día <span class="required">*</span></label>
+                        <select name="estado_dia" required><option value="">Selecciona</option><option value="Nublado sin lluvia">☁️ Nublado sin lluvia</option><option value="Nublado con lluvia">🌧️ Nublado con lluvia</option><option value="Soleado">☀️ Soleado</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Cómo ha ido tu día hoy? (1-10) <span class="required">*</span></label>
+                        <input type="number" name="dia_valoracion" class="rating-input" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Qué has hecho? (Bullet points) <span class="required">*</span></label>
+                        <textarea name="actividades_dia" required></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección 2: Alimentación -->
+            <div class="section">
+                <h2>🍽️ Alimentación <span class="accordion-icon">&gt;</span></h2>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label>¿Qué has desayunado? <span class="required">*</span></label>
+                        <select name="desayuno" class="dropdown-with-other" required><option value="">Selecciona</option><option value="Cereales, leche y fruta">Cereales, leche y fruta</option><option value="Nada">Nada</option><option value="Otros">Otros</option></select>
+                        <input type="text" class="other-input" name="desayuno_otros" placeholder="Especifica tu desayuno">
+                    </div>
+                    <div class="form-group">
+                        <label>¿Cómo te ha sentado el desayuno? (1-5) <span class="required">*</span></label>
+                        <input type="number" name="desayuno_valoracion" class="rating-input" min="1" max="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Qué has comido? <span class="required">*</span></label>
+                        <textarea name="comida" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Cómo te ha sentado la comida? (1-5) <span class="required">*</span></label>
+                        <input type="number" name="comida_valoracion" class="rating-input" min="1" max="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Qué has comido entre medias? <span class="required">*</span></label>
+                        <textarea name="snacks" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Qué has cenado? <span class="required">*</span></label>
+                        <textarea name="cena" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Cómo te ha sentado la cena? (1-5) <span class="required">*</span></label>
+                        <input type="number" name="cena_valoracion" class="rating-input" min="1" max="5" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección 3: Tecnología y Gastos -->
+            <div class="section">
+                <h2>📱 Tecnología y Gastos <span class="accordion-icon">&gt;</span></h2>
+                <div class="section-content">
+                     <div class="form-group">
+                        <label>Tiempo con el móvil (minutos) <span class="required">*</span></label>
+                        <select name="tiempo_movil" class="dropdown-with-other" required><option value="">Selecciona</option><option value="60">60 mins</option><option value="90">90 mins</option><option value="120">120 mins</option><option value="Otros">Otros</option></select>
+                        <input type="text" class="other-input" name="tiempo_movil_otros" placeholder="Especifica los minutos">
+                    </div>
+                    <div class="form-group">
+                        <label>¿Qué gastos has tenido?</label>
+                        <textarea name="gastos" placeholder="Ej: Café 1.50€"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección 4: Trabajo -->
+            <div class="section">
+                <h2>💼 Trabajo <span class="accordion-icon">&gt;</span></h2>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label>¿Has trabajado? <span class="required">*</span></label>
+                        <select name="has_trabajado" id="has_trabajado" required><option value="">Selecciona</option><option value="Si">Sí</option><option value="No">No</option></select>
+                    </div>
+                    <div id="trabajo_fields" style="display: none;">
+                        <div class="form-group">
+                            <label>¿Dónde has trabajado? <span class="required">*</span></label>
+                            <select name="donde_trabajado" class="dropdown-with-other"><option value="">Selecciona</option><option value="Trabajo">Trabajo</option><option value="Casa">Casa</option><option value="Otros">Otros</option></select>
+                            <input type="text" class="other-input" name="donde_trabajado_otros" placeholder="Especifica el lugar">
+                        </div>
+                        <div class="form-group">
+                            <label>¿Cómo ha ido tu día laboral? (1-10) <span class="required">*</span></label>
+                            <input type="number" name="dia_laboral_valoracion" class="rating-input" min="1" max="10">
+                        </div>
+                        <div class="form-group">
+                            <label>¿Cuánto de productivo has sido? (1-10) <span class="required">*</span></label>
+                            <input type="number" name="productividad" class="rating-input" min="1" max="10">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección 5: Reflexión Personal -->
+            <div class="section">
+                <h2>💭 Reflexión Personal <span class="accordion-icon">&gt;</span></h2>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label>¿Qué agradeces hoy? <span class="required">*</span></label>
+                        <textarea name="agradecimiento" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Qué fue lo mejor del día? <span class="required">*</span></label>
+                        <textarea name="mejor_dia" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Qué harías distinto? <span class="required">*</span></label>
+                        <textarea name="haria_distinto" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Sensación al irte a dormir <span class="required">*</span></label>
+                        <div class="checkbox-options">
+                           <div class="checkbox-item"><input type="checkbox" id="pens_contento" name="pensamiento_dormir" value="Contento"><label for="pens_contento">Contento</label></div>
+                           <div class="checkbox-item"><input type="checkbox" id="pens_satisfecho" name="pensamiento_dormir" value="Satisfecho"><label for="pens_satisfecho">Satisfecho</label></div>
+                           <div class="checkbox-item"><input type="checkbox" id="pens_tranquilo" name="pensamiento_dormir" value="Tranquilo"><label for="pens_tranquilo">Tranquilo</label></div>
+                           <div class="checkbox-item"><input type="checkbox" id="pens_cansado" name="pensamiento_dormir" value="Cansado"><label for="pens_cansado">Cansado</label></div>
+                           <div class="checkbox-item"><input type="checkbox" id="pens_preocupado" name="pensamiento_dormir" value="Preocupado"><label for="pens_preocupado">Preocupado</label></div>
+                           <div class="checkbox-item"><input type="checkbox" id="pens_normal" name="pensamiento_dormir" value="Normal"><label for="pens_normal">Normal</label></div>
+                           <div class="checkbox-item"><input type="checkbox" id="pens_otros_check" name="pensamiento_otros_check"><label for="pens_otros_check">Otros</label></div>
+                        </div>
+                        <input type="text" class="other-input" id="pensamiento_otros" name="pensamiento_otros" placeholder="Especifica otros pensamientos">
+                    </div>
+                    <div class="form-group">
+                        <label>Plan para un mañana perfecto (bullet points) <span class="required">*</span></label>
+                        <textarea name="plan_manana" required></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit">🚀 Enviar Journal</button>
+            <div class="error-message" id="errorMessage"></div>
+        </form>
+    </div>
+
+    <!-- Pantalla de éxito oculta -->
+    <div id="successScreen">
+        <div class="success-content">
+            <h2>¡Enviado!</h2>
+            <p>Gracias por dedicarte este tiempo. ¡Seguimos creciendo juntos!</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('journalingForm');
+            const sections = document.querySelectorAll('.section');
+            const WEBHOOK_URL = 'https://n8n-n8n.owt5wb.easypanel.host/webhook/journaling'; // <-- RECUERDA CAMBIAR ESTO
+            let diaAcostarseEsSiguiente = false;
+
+            // --- LÓGICA DEL ACORDEÓN ---
+            sections.forEach(section => {
+                const header = section.querySelector('h2');
+                header.addEventListener('click', () => {
+                    if (section.classList.contains('active')) return;
+                    sections.forEach(s => s.classList.remove('active'));
+                    section.classList.add('active');
+                });
+            });
+
+            // --- LÓGICA AUXILIAR DEL FORMULARIO ---
+            document.querySelectorAll('.day-option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.day-option').forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                    diaAcostarseEsSiguiente = this.dataset.day === 'siguiente';
+                });
+            });
+
+            const setupOtherFieldLogic = (checkboxId, inputId) => {
+                const checkbox = document.getElementById(checkboxId);
+                const otherInput = document.getElementById(inputId);
+                if (checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        otherInput.style.display = this.checked ? 'block' : 'none';
+                    });
+                }
+            };
+            setupOtherFieldLogic('sens_otros_check', 'sensacion_otros');
+            setupOtherFieldLogic('pens_otros_check', 'pensamiento_otros');
+            
+            document.querySelectorAll('.dropdown-with-other').forEach(select => {
+                select.addEventListener('change', function() {
+                    const otherInput = this.nextElementSibling;
+                    otherInput.style.display = this.value === 'Otros' ? 'block' : 'none';
+                    otherInput.required = this.value === 'Otros';
+                });
+            });
+            
+            const hasTrabajadoSelect = document.getElementById('has_trabajado');
+            if(hasTrabajadoSelect) {
+                 hasTrabajadoSelect.addEventListener('change', function() {
+                    const trabajoFields = document.getElementById('trabajo_fields');
+                    const isWorking = this.value === 'Si';
+                    trabajoFields.style.display = isWorking ? 'block' : 'none';
+                    trabajoFields.querySelectorAll('input, select').forEach(field => {
+                        if (!field.classList.contains('other-input')) field.required = isWorking;
+                    });
+                });
+            }
+
+            // --- LÓGICA DE ENVÍO DEL FORMULARIO ---
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const data = {};
+                const formData = new FormData(this);
+
+                const fecha = formData.get('fecha');
+                data.fecha = fecha;
+                data.timestamp_levantado = new Date(`${fecha}T${formData.get('hora_levantado')}`).toISOString();
+                
+                const fechaAcostarse = new Date(`${fecha}T${formData.get('hora_acostarse')}`);
+                if (diaAcostarseEsSiguiente) fechaAcostarse.setDate(fechaAcostarse.getDate() + 1);
+                data.timestamp_acostarse = fechaAcostarse.toISOString();
+                
+                formData.forEach((value, key) => {
+                    if (!['fecha', 'hora_levantado', 'hora_acostarse', 'sensacion', 'sensacion_otros_check', 'sensacion_otros', 'pensamiento_dormir', 'pensamiento_otros_check', 'pensamiento_otros'].includes(key)) {
+                        data[key] = value;
+                    }
+                });
+                
+                const getCheckboxValues = (name) => {
+                    let values = Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
+                    if (document.querySelector(`input[name="${name}_otros_check"]:checked`)) {
+                        const otherValue = document.getElementById(`${name}_otros`).value.trim();
+                        if (otherValue) values.push(otherValue);
+                    }
+                    return values.join(', ');
+                };
+                
+                data.sensacion_predominante = getCheckboxValues('sensacion');
+                data.pensamiento_dormir = getCheckboxValues('pensamiento_dormir');
+
+                ['temperatura', 'desayuno', 'tiempo_movil', 'donde_trabajado'].forEach(field => {
+                    if (data[field] === 'Otros') {
+                        data[field] = formData.get(`${field}_otros`);
+                    }
+                    delete data[`${field}_otros`];
+                });
+
+                data.has_trabajado = data.has_trabajado === 'Si';
+                if (!data.has_trabajado) {
+                    delete data.donde_trabajado;
+                    delete data.dia_laboral_valoracion;
+                    delete data.productividad;
+                }
+
+                try {
+                    const response = await fetch(WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (response.ok) {
+                        document.getElementById('formContainer').style.display = 'none';
+                        document.getElementById('successScreen').style.display = 'flex';
+                    } else {
+                        throw new Error(`Error: ${response.statusText}`);
+                    }
+                } catch (error) {
+                    const errorMessage = document.getElementById('errorMessage');
+                    errorMessage.textContent = '✗ Error al enviar. Revisa tu conexión e inténtalo de nuevo.';
+                    errorMessage.style.display = 'block';
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
