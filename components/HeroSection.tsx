@@ -67,6 +67,30 @@ const HeroSection: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Scroll Down Arrow */}
+      <div
+        className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer animate-bounce ${transitionClass('delay-1000')}`}
+        onClick={() => {
+          const nextSection = document.getElementById('objectives-section');
+          if (nextSection) {
+            nextSection.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+          }
+        }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-10 h-10 text-slate-400 hover:text-blue-500 transition-colors duration-300"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </div>
     </section>
   );
 };

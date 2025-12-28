@@ -14,7 +14,7 @@ const ChatbotSection: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const sectionRef = useRef<HTMLElement>(null);
 
-    const endpoint = "https://n8n-n8n.owt5wb.easypanel.host/webhook/83ba4578-e981-4468-8bab-174c7e8f12c4";
+    const endpoint = "https://corsproxy.io/?" + encodeURIComponent("https://n8n-n8n.owt5wb.easypanel.host/webhook/83ba4578-e981-4468-8bab-174c7e8f12c4");
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -39,11 +39,13 @@ const ChatbotSection: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        scrollToBottom();
+        if (chatHistory.length > 0) {
+            scrollToBottom();
+        }
     }, [chatHistory]);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
 
     const formatParsedResponse = (parsed: any): string => {
