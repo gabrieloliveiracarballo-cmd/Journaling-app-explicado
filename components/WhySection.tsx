@@ -65,7 +65,7 @@ const WhySection: React.FC = () => {
     <section ref={sectionRef} id="why-section" className="min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-8">
       <div className="bg-white/70 backdrop-blur-md rounded-2xl shadow-2xl p-8 md:p-16 w-full max-w-7xl mx-auto">
         <h2 className={`text-2xl md:text-4xl lg:text-5xl font-bold mb-16 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          ¿Por qué?
+          Motivos técnicos
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
           {cardData.map((card, index) => (

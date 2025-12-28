@@ -12,15 +12,6 @@ const HeartIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-const ScrollDownIcon: React.FC = () => (
-  <a href="#why-section" className="absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer group">
-    <div className="w-8 h-12 border-2 border-slate-700 rounded-full flex justify-center pt-2 group-hover:bg-slate-700/10 transition-colors">
-      <div className="w-1 h-2 bg-slate-700 rounded-full animate-bounce"></div>
-    </div>
-    <span className="absolute top-full mt-2 text-xs text-slate-600/70 tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">SCROLL</span>
-  </a>
-);
-
 
 const HeroSection: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -76,7 +67,6 @@ const HeroSection: React.FC = () => {
           </div>
         </div>
       </div>
-      <ScrollDownIcon />
     </section>
   );
 };
