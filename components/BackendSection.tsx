@@ -4,22 +4,22 @@ import React, { useState, useEffect, useRef } from 'react';
 // Data for the explanation cards
 const flowParts = [
   {
-    imageSrc: '/images/respuestas.png',
+    imageSrc: `${import.meta.env.BASE_URL}images/respuestas.png`,
     title: '1. Recepción y Ramificación',
     description: 'El flujo se inicia con un Webhook que captura los datos del formulario. Inmediatamente, el flujo se ramifica: los datos principales van a un proceso de análisis con IA, mientras que las entradas específicas como los \'contactos\' se tratan y almacenan por separado para mantener la integridad de la base de datos.'
   },
   {
-    imageSrc: '/images/ia-flujo.png',
+    imageSrc: `${import.meta.env.BASE_URL}images/ia-flujo.png`,
     title: '2. Normalización con IA',
     description: 'Se utiliza GPT 5-mini para procesar el lenguaje natural. Transforma entradas de texto libre (como \'qué has hecho\' o \'agradecimientos\') en datos estructurados y medibles. Esto incluye categorizar actividades, extraer sentimientos y generar resúmenes, que luego se insertan en la base de datos.'
   },
   {
-    imageSrc: '/images/postgres.png',
+    imageSrc: `${import.meta.env.BASE_URL}images/postgres.png`,
     title: '3. Almacenamiento de Datos',
     description: 'Toda la información, tanto la original como la enriquecida por la IA, se almacena en una base de datos PostgreSQL. Se realizan múltiples inserciones en tablas específicas (actividades, comidas, sentimientos) para construir un registro histórico robusto y facilitar consultas complejas para el dashboard.'
   },
   {
-    imageSrc: '/images/envio-info.png',
+    imageSrc: `${import.meta.env.BASE_URL}images/envio-info.png`,
     title: '4. Agregación y Notificaciones',
     description: 'Una vez que todos los datos han sido procesados y almacenados, el flujo los unifica en un nodo \'Merge\'. Finalmente, se genera un informe completo del día y se distribuye a través de varios canales, como email, Telegram o una petición HTTP, notificando al usuario que su entrada ha sido procesada.'
   }
@@ -91,7 +91,7 @@ const BackendSection: React.FC = () => {
 
         <div className={`mb-16 rounded-2xl overflow-hidden shadow-lg border-4 border-white/50 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
           {/* Use the public/ directory root: files in public/ are served at /<filename> */}
-          <img src="/images/flujo-n8n.png" alt="Flujo completo de N8N" className="w-full h-full object-contain" />
+          <img src={`${import.meta.env.BASE_URL}images/flujo-n8n.png`} alt="Flujo completo de N8N" className="w-full h-full object-contain" />
         </div>
 
         <h3 className={`text-3xl font-bold text-slate-800 mb-8 text-center transition-all duration-1000 delay-[450ms] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>

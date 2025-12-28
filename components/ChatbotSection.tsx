@@ -177,7 +177,7 @@ const ChatbotSection: React.FC = () => {
                     {/* Image Placeholder */}
                     <div className="rounded-2xl overflow-hidden shadow-lg border-4 border-white/50 flex items-center justify-center bg-slate-100 min-h-64">
                         <img
-                            src="/images/chatbot.png"
+                            src={`${import.meta.env.BASE_URL}images/chatbot.png`}
                             alt="Chatbot inteligente"
                             className="w-full h-full object-contain"
                             onError={(e) => {

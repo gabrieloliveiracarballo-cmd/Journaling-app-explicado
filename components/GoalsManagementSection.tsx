@@ -28,15 +28,15 @@ const GoalsManagementSection: React.FC = () => {
 
     const goalsData = [
         {
-            image: "/images/objetivos-grafico.png",
+            image: `${import.meta.env.BASE_URL}images/objetivos-grafico.png`,
             title: "Gráfico de seguimiento"
         },
         {
-            image: "/images/avances-detalle.png",
+            image: `${import.meta.env.BASE_URL}images/avances-detalle.png`,
             title: "Desglose de los objetivos"
         },
         {
-            image: "/images/intro-info.png",
+            image: `${import.meta.env.BASE_URL}images/intro-info.png`,
             title: "Formulario introducción objetivos"
         }
     ];

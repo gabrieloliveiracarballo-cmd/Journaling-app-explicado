@@ -104,14 +104,14 @@ const MethodSection: React.FC = () => {
                         <h3 className="text-2xl font-bold text-slate-800 mb-2">Formulario de Entrada</h3>
                         <p className="text-slate-600 mb-4">Un formulario dinámico y fácil de usar para registrar los datos diarios de forma estructurada.</p>
                         <div className="flex-grow rounded-2xl overflow-hidden shadow-lg border-4 border-white/50">
-                            <iframe src="/form.html" className="w-full h-[600px] border-0" title="Formulario de Journaling"></iframe>
+                            <iframe src={`${import.meta.env.BASE_URL}form.html`} className="w-full h-[600px] border-0" title="Formulario de Journaling"></iframe>
                         </div>
                     </div>
                     <div className="flex flex-col">
                         <h3 className="text-2xl font-bold text-slate-800 mb-2">Dashboard de Visualización</h3>
                         <p className="text-slate-600 mb-4">Los datos procesados se presentan en un panel de control interactivo para un análisis claro y rápido.</p>
                         <div className="flex-grow rounded-2xl overflow-hidden shadow-lg border-4 border-white/50">
-                            <iframe src="/dashboard.html" className="w-full h-[600px] border-0" title="Dashboard de Progreso"></iframe>
+                            <iframe src={`${import.meta.env.BASE_URL}dashboard.html`} className="w-full h-[600px] border-0" title="Dashboard de Progreso"></iframe>
                         </div>
                     </div>
                 </div>
@@ -123,10 +123,10 @@ const MethodSection: React.FC = () => {
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl mx-auto">
                         <div className="rounded-2xl overflow-hidden border-2 border-slate-300/80 transform hover:scale-105 hover:border-blue-300 transition-all duration-300 shadow-md flex items-center justify-center bg-slate-900">
-                            <img src="/images/buenosdias.png" alt="Recordatorio diario" className="w-full h-auto object-contain" />
+                            <img src={`${import.meta.env.BASE_URL}images/buenosdias.png`} alt="Recordatorio diario" className="w-full h-auto object-contain" />
                         </div>
                         <div className="rounded-2xl overflow-hidden border-2 border-slate-300/80 transform hover:scale-105 hover:border-blue-300 transition-all duration-300 shadow-md flex items-center justify-center bg-slate-900">
-                            <img src="/images/journaling-recordatorio.png" alt="Mensaje motivador" className="w-full h-auto object-contain" />
+                            <img src={`${import.meta.env.BASE_URL}images/journaling-recordatorio.png`} alt="Mensaje motivador" className="w-full h-auto object-contain" />
                         </div>
                     </div>
                 </div>

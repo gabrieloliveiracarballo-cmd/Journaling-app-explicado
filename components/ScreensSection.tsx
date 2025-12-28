@@ -49,7 +49,7 @@ const ScreensSection: React.FC = () => {
 
     const screenDetails = [
         {
-            "image": "/images/indicadores-num-ja.png",
+            "image": `${import.meta.env.BASE_URL}images/indicadores-num-ja.png`,
             "subtitle": "Medias numéricas y objetivos semanales",
             "details": [
                 {
@@ -67,7 +67,7 @@ const ScreensSection: React.FC = () => {
             ]
         },
         {
-            "image": "/images/graficos-ja.png",
+            "image": `${import.meta.env.BASE_URL}images/graficos-ja.png`,
             "subtitle": "Gráficos de cumplimiento diario y productividad",
             "details": [
                 {
@@ -89,7 +89,7 @@ const ScreensSection: React.FC = () => {
             ]
         },
         {
-            "image": "/images/estados-animo.png",
+            "image": `${import.meta.env.BASE_URL}images/estados-animo.png`,
             "subtitle": "Gráficos de seguimiento semanal",
             "details": [
                 {
