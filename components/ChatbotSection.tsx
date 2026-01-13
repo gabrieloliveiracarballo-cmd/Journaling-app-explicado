@@ -14,7 +14,7 @@ const ChatbotSection: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const sectionRef = useRef<HTMLElement>(null);
 
-    const endpoint = "https://corsproxy.io/?" + encodeURIComponent("https://n8n-n8n.owt5wb.easypanel.host/webhook/83ba4578-e981-4468-8bab-174c7e8f12c4");
+    const endpoint = "https://corsproxy.io/?" + encodeURIComponent("https://app.next-barber.com/webhook/83ba4578-e981-4468-8bab-174c7e8f12c4");
 
     useEffect(() => {
         const observer = new IntersectionObserver(
